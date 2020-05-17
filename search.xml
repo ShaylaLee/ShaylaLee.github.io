@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>docker-常用操作</title>
+    <url>/2020/02/22/docker-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h1 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h1><ul>
+<li>拉取镜像</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker pull elasticsearch:6.7.0</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>运行容器</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker run </span><br><span class="line"></span><br><span class="line">-e ES_JAVA_OPTS="-Xms256m -Xmx256m"  //环境变量</span><br><span class="line"></span><br><span class="line">-d  //守护进程运行</span><br><span class="line"></span><br><span class="line">-p 9200:9200 -p 9300:9300  //端口映射</span><br><span class="line"></span><br><span class="line">-v /data/mnt/elasticsearch/config/master.yml:/usr/share/elasticsearch/config/elasticsearch.yml //将host机器的目录mount到container中。</span><br><span class="line"></span><br><span class="line">-v /data/mnt/elasticsearch/master:/usr/share/elasticsearch/data //https://www.jianshu.com/p/ef0f24fd0674</span><br><span class="line"></span><br><span class="line">--name es-master  //容器命名，不允许重名。</span><br><span class="line"></span><br><span class="line">elasticsearch:6.7.0 //镜像</span><br></pre></td></tr></table></figure>
+
+ <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker run </span><br><span class="line"></span><br><span class="line">--link es-master:elasticsearch </span><br><span class="line"></span><br><span class="line">-p 5601:5601</span><br><span class="line"></span><br><span class="line">--name kibana </span><br><span class="line"></span><br><span class="line">-d </span><br><span class="line"></span><br><span class="line">kibana:6.7.0</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>查看运行中的容器</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker ps </span><br><span class="line"></span><br><span class="line">docker container ls</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>查看所有容器，包括启动失败、停止的。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker ps -a</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>查看某个容器的日志。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker logs [--tail 10] &#123;id&#x2F;name&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>启动容器</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker start &#123;id&#x2F;name&#125;</span><br></pre></td></tr></table></figure>
+
+<p>-i:以 交互模式启动 <a href="https://blog.csdn.net/michel4liu/article/details/80857995" target="_blank" rel="noopener">交互模式不懂点我</a>. (docker start -i {id/name}, 本会话内运行容器，关闭会话会停止容器)</p>
+<p>-t:以 附加进程方式启动 <a href="https://blog.csdn.net/michel4liu/article/details/80878686" target="_blank" rel="noopener">附加进程不懂的点我</a></p>
+<ul>
+<li>暂停容器、恢复容器</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker pause &#123;id&#x2F;name&#125;</span><br><span class="line"></span><br><span class="line">docker unpause &#123;id&#x2F;name&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>删除容器</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker container rm &#123;id&#x2F;name&#125;</span><br><span class="line">docker container rm $(docker container ls -a -q)  &#x2F;&#x2F;删除所有容器</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>以命令行交互的方式 进入某个在运行的容器</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker exec -it &#123;container-id&#x2F;name&#125; bash</span><br><span class="line"></span><br><span class="line">docker exec -it &#123;container-id&#x2F;name&#125; sh</span><br></pre></td></tr></table></figure>
+
+<p>不建议使用docker attach （关闭会话会停止容器） </p>
+<ul>
+<li>退出容器：exit</li>
+</ul>
+<ul>
+<li>获取容器的PID</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker inspect --format &quot;&#123;&#123;.State.Pid&#125;&#125;&quot; &#123;container-id&#x2F;name&#125;</span><br><span class="line">docker top &#123;container-id&#x2F;name&#125; &#x2F;&#x2F;查看容器进程</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="镜像"><a href="#镜像" class="headerlink" title="镜像"></a>镜像</h1><ul>
+<li><p>查看镜像</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker images</span><br><span class="line">docker image ls -a</span><br><span class="line">docker image inspect app:v1</span><br><span class="line">docker images -f dangling&#x3D;false &#x2F;&#x2F; -f,--filter筛选</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>构建镜像</p>
+<p>在Dockerfile所在目录下执行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker build </span><br><span class="line">--network host &#x2F;&#x2F;使用本机网络</span><br><span class="line">-t app:v1 &#x2F;&#x2F;生成的镜像app,版本为v1</span><br><span class="line">.</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>推送自定义镜像到远程仓库</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker push &lt;username&gt;&#x2F;&lt;repository&gt;:&lt;tag&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>删除镜像</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker image rm app:v1</span><br><span class="line">docker rmi app:v1</span><br><span class="line">docker image prune &#x2F;&#x2F;删除所有虚空镜像dangling images</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>新增tag</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker image tag app:v1 app:v2</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<h1 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h1><ul>
+<li>设置环境变量：</li>
+</ul>
+<p>1）通过dockerfile里的ENV命令设置 （跟随镜像）</p>
+<p>2）通过<code>docker run --env &lt;key&gt;=&lt;value&gt;</code> 时指定或修改启动后的环境变量 （当前运行的容器生效）</p>
+<ul>
+<li>查看环境变量：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker inspect</span><br><span class="line">docker exec -it &lt;CONTAINER-NAME&gt; OR &lt;CONTAINER-ID&gt; env</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="进入STOP的容器"><a href="#进入STOP的容器" class="headerlink" title="进入STOP的容器"></a>进入STOP的容器</h1><p>找到想要进入的容器id, 假设是 837ffa1d4</p>
+<p>保存”案发现场”为镜像</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker commit 837ffa1d4 user&#x2F;temp</span><br><span class="line">docker run -it user&#x2F;temp sh &#x2F;&#x2F;启动进入新容器</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+]]></content>
+      <categories>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>cmd</tag>
+      </tags>
+  </entry>
+</search>
