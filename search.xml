@@ -69,9 +69,9 @@
 
 <p>Reindex过程还可以对源数据进行过滤、从远程服务器进行reindex等等，但是我们暂时使用不到这些特性。</p>
 <p>任务结束后，发现新索引的文档数比源索引要少很多，看起来没有完全复制过来。</p>
-<img src="es-change-mappings/image-20200603140340207.png" alt="image-20200603140340207" style="zoom: 50%;" />
+<img src="../images/es-change-mappings/image-20200603140340207.png" alt="image-20200603140340207" style="zoom: 50%;" />
 
-<img src="es-change-mappings/image-20200603140414658.png" alt="image-20200603140414658" style="zoom: 50%;" />
+<img src="../images/es-change-mappings/image-20200603140414658.png" alt="image-20200603140414658" style="zoom: 50%;" />
 
 
 
